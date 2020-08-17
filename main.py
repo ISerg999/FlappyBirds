@@ -1,5 +1,6 @@
 import pygame
 
+from menu import CMainMenu
 from res import CResourse
 from static import CStaticParam
 
@@ -20,6 +21,7 @@ class CMain:
         self._clock = pygame.time.Clock()
         self._is_game = False
         self._is_exit_to_menu = False
+        self._main_menu = CMainMenu()
 
     def run(self):
         """
@@ -42,6 +44,8 @@ class CMain:
         :param event: произошедшее событие.
         :return: True если произошло событие закрывающее приложение, False в остальных случаях.
         """
+        if event.type == pygame.QUIT:
+            return True
         if self._is_game:
             if self._is_exit_to_menu:
                 # TODO: Запуск анализа событий запроса выхода в основное меню.
@@ -53,9 +57,13 @@ class CMain:
                 pass
         else:
             # TODO: Запуск анализа событий из основного меню.
-            pass
-            # res = ...
-            # res: -1 - Выбор "Выход из игры", 0 - выбор не сделан, 1 - выбр "Начало игры"
+            res = self._main_menu.event_handling(event)
+            if res < 0:
+                return True
+            elif res > 0:
+                self._is_game, self._is_exit_to_menu = True, False
+                # TODO: Запуск игрового процесса.
+                pass
         return False
 
     def _paint(self):
@@ -72,8 +80,9 @@ class CMain:
                 # TODO: Рисование запроса на выход из игры в основное меню.
                 pass
         else:
-            # TODO: Рисование основного меню.
-            pass
+            # Рисование основного меню.
+            self._main_menu.paint(self._screen)
+        pygame.display.flip()
 
     def _next_state(self):
         """

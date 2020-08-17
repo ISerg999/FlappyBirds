@@ -1,5 +1,5 @@
 
-class CResourse():
+class CResourse:
     """
     Класс ресурсов игры.
     """
@@ -12,6 +12,17 @@ class CResourse():
 
     # Цвета.
     COLOR_BLACK = (0, 0, 0)
+    COLOR_WHITE = (255, 255, 255)
+    COLOR_SILVER = (192, 192, 192)
+    COLOR_RED = (255, 0, 0)
+    COLOR_GREEN = (0, 255, 0)
+    COLOR_BLUE = (0, 0, 255)
+    COLOR_YELLOW = (255, 255, 0)
+    COLOR_CYANIDE = (0, 255, 255)
+    COLOR_MAGENTA = (255, 0, 255)
 
     # Путь к внешним ресурам.
     PATH_BASE_RESOURSE = "./Resource/"
+
+    # Внешние ресурсы.
+    PATH_STARRY_SKY = "starry-sky-1280_700.png"
