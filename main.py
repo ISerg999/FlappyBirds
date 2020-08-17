@@ -1,5 +1,6 @@
 import pygame
 
+from game import CGame
 from menu import CMainMenu
 from res import CResourse
 from static import CStaticParam
@@ -13,8 +14,9 @@ class CMain:
     def __init__(self):
         self._static_param = CStaticParam()
         self._static_param.full_size = (1280, 700)
-        self._static_param.game_info_line_size = 24
+        self._static_param.game_info_line_size = 30
         self._fps = 30
+        self._static_param.game_process = CGame()
         pygame.init()
         self._screen = pygame.display.set_mode(self._static_param.full_size)
         pygame.display.set_caption("FlappyBirds")
@@ -53,17 +55,20 @@ class CMain:
                 # res = ...
                 # res: -1 - выбор сделан "Нет", 0 - выбор не сделан, 1 - выбор сделан "Да"
             else:
-                # TODO: Запуск анализа игровых событий
-                pass
+                # Запуск анализа игровых событий
+                res = self._static_param.game_process.event_handling(event)
+                if res < 0:
+                    # TODO: Запуск объекта дополнительного меню.
+                    # self._is_exit_to_menu = True
+                    pass
         else:
-            # TODO: Запуск анализа событий из основного меню.
+            # Анализ событий основного меню.
             res = self._main_menu.event_handling(event)
             if res < 0:
                 return True
             elif res > 0:
                 self._is_game, self._is_exit_to_menu = True, False
-                # TODO: Запуск игрового процесса.
-                pass
+                self._static_param.game_process.start()
         return False
 
     def _paint(self):
@@ -74,8 +79,8 @@ class CMain:
         if self._is_game:
             # TODO: Рисование верхней информационной полосы.
             pass
-            # TODO: Рисования игры.
-            pass
+            # Рисования игры.
+            self._static_param.game_process.paint(self._screen)
             if self._is_exit_to_menu:
                 # TODO: Рисование запроса на выход из игры в основное меню.
                 pass
@@ -89,8 +94,8 @@ class CMain:
         Расчёт новых состояний, если это необходимо.
         """
         if self._is_game and not self._is_exit_to_menu:
-            # TODO: Расчёт новых игровых состояний.
-            pass
+            # Расчёт новых игровых состояний.
+            self._static_param.game_process.next_state()
 
 
 if __name__ == '__main__':

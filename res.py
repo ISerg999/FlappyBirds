@@ -26,3 +26,4 @@ class CResourse:
 
     # Внешние ресурсы.
     PATH_STARRY_SKY = "starry-sky-1280_700.png"
+    PATH_STARRY_SKY_SHORT = "starry-sky-1280_670.png"

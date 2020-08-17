@@ -6,6 +6,7 @@ class CStaticParam:
     # Ключи объектов
     _WINDOW_FULL_SIZE = "win_full_size"
     _GAME_INFO_LINE_SIZE = "game_info_line_size"
+    _GAME_PROCESS = "game_process"
 
     # _GAME_FLAYER_PLAYER = "game_flayer_player"
     # _GAME_INFO_LINE = "game_info_line"
@@ -41,3 +42,12 @@ class CStaticParam:
     @game_info_line_size.setter
     def game_info_line_size(self, value):
         self._dict_object.setdefault(CStaticParam._GAME_INFO_LINE_SIZE, value)
+
+    # Объект управляющий игрой.
+    @property
+    def game_process(self):
+        return self._dict_object.get(CStaticParam._GAME_PROCESS)
+
+    @game_process.setter
+    def game_process(self, value):
+        self._dict_object.setdefault(CStaticParam._GAME_PROCESS, value)
