@@ -4,15 +4,19 @@ class CStaticParam:
     """
 
     # Ключи объектов
-    _GAME_FLAYER_PLAYER = "game_flayer_player"
-    _GAME_INFO_LINE = "game_info_line"
-    _GAME_MAZE = "game_maze"
+    _WINDOW_FULL_SIZE = "win_full_size"
+    _GAME_INFO_LINE_SIZE = "game_info_line_size"
+
+    # _GAME_FLAYER_PLAYER = "game_flayer_player"
+    # _GAME_INFO_LINE = "game_info_line"
+    # _GAME_MAZE = "game_maze"
 
     def __new__(cls):
         if not hasattr(cls, "instance"):
             cls.instance = super(CStaticParam, cls).__new__(cls)
         return cls.instance
 
+    # Словарь статических параметров.
     _dict_object = {}
 
     # Список объектов задающих внешний вид рисования лабиринта.
@@ -20,44 +24,20 @@ class CStaticParam:
     # Список объектов задающих кодирование самого лабиринта.
     _list_maze_code = []
 
-    def set_game_flayer_player(self, game_flayer_player):
-        """
-        Задаём объект летуна.
-        :param game_flayer_player: объект летуна.
-        """
-        self._dict_object.setdefault(CStaticParam._GAME_FLAYER_PLAYER, game_flayer_player)
+    # Параметры размера всего окна.
+    @property
+    def full_size(self):
+        return self._dict_object.get(CStaticParam._WINDOW_FULL_SIZE)
 
-    def get_game_flayer_player(self):
-        """
-        Получаем объект летуна.
-        :return: объект летуна
-        """
-        return self._dict_object.get(CStaticParam._GAME_FLAYER_PLAYER)
+    @full_size.setter
+    def full_size(self, value):
+        self._dict_object.setdefault(CStaticParam._WINDOW_FULL_SIZE, value)
 
-    def set_game_info_line(self, game_info_line):
-        """
-        Задаём объект игровой информационной линии.
-        :param game_info_line: объект игровой информационной линии
-        """
-        self._dict_object.setdefault(CStaticParam._GAME_INFO_LINE, game_info_line)
+    # Высота игровой информационной полосы.
+    @property
+    def game_info_line_size(self):
+        return self._dict_object.get(CStaticParam._GAME_INFO_LINE_SIZE)
 
-    def get_game_info_line(self):
-        """
-        Получаем объект игровой информационной линии.
-        :return: объект игровой информационной линии
-        """
-        return self._dict_object.get(CStaticParam._GAME_INFO_LINE)
-
-    def set_game_maze(self, game_maze):
-        """
-        Задаём объект управляющий выводом лабиринта
-        :param game_maze: объект управляющий выводом лабиринта
-        """
-        self._dict_object.setdefault(CStaticParam._GAME_MAZE, game_maze)
-
-    def get_game_maze(self):
-        """
-        Получаем объект управляющий выводом лабиринта
-        :return: объект управляющий выводом лабиринта
-        """
-        return self._dict_object.get(CStaticParam._GAME_MAZE)
+    @game_info_line_size.setter
+    def game_info_line_size(self, value):
+        self._dict_object.setdefault(CStaticParam._GAME_INFO_LINE_SIZE, value)

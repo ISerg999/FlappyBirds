@@ -12,13 +12,6 @@ class CGamesExceptionExitGame(CGamesException):
     pass
 
 
-class CGamesExceptionExitMenu(CGamesException):
-    """
-    Изключение возникающее при выходе в главное меню игры.
-    """
-    pass
-
-
 class CGamesExceptionStopMaze(CGamesException):
     """
     Изключение возникающее если выводимый лабиринт закончился.
