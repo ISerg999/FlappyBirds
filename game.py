@@ -27,6 +27,9 @@ class CGame:
         Обработка события игрового процесса.
         :param event: обрабатываемое событие
         """
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                return -1
         return 0
 
     def paint(self, sc):

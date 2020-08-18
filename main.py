@@ -1,7 +1,7 @@
 import pygame
 
 from game import CGame
-from menu import CMainMenu
+from menu import CMainMenu, CExitToMenu
 from res import CResourse
 from static import CStaticParam
 
@@ -21,9 +21,9 @@ class CMain:
         self._screen = pygame.display.set_mode(self._static_param.full_size)
         pygame.display.set_caption("FlappyBirds")
         self._clock = pygame.time.Clock()
-        self._is_game = False
-        self._is_exit_to_menu = False
+        self._is_game = self._is_exit_to_menu = False
         self._main_menu = CMainMenu()
+        self._exit_to_menu = CExitToMenu()
 
     def run(self):
         """
@@ -39,6 +39,7 @@ class CMain:
             self._paint()
             # Подготовка новых данных.
             self._next_state()
+            pygame.time.delay(20)
 
     def _analize_event(self, event):
         """
@@ -50,24 +51,27 @@ class CMain:
             return True
         if self._is_game:
             if self._is_exit_to_menu:
-                # TODO: Запуск анализа событий запроса выхода в основное меню.
-                pass
-                # res = ...
-                # res: -1 - выбор сделан "Нет", 0 - выбор не сделан, 1 - выбор сделан "Да"
+                # Запуск анализа событий запроса выхода в основное меню.
+                res = self._exit_to_menu.event_handling(event)
+                if res < 0:
+                    # Выбран выход в основное меню.
+                    self._is_game = self._is_exit_to_menu = False
+                elif res > 0:
+                    # Выбрано продолжение игры.
+                    self._is_exit_to_menu = False
             else:
                 # Запуск анализа игровых событий
                 res = self._static_param.game_process.event_handling(event)
                 if res < 0:
-                    # TODO: Запуск объекта дополнительного меню.
-                    # self._is_exit_to_menu = True
-                    pass
+                    # Запуск объекта дополнительного меню.
+                    self._is_exit_to_menu = True
         else:
             # Анализ событий основного меню.
             res = self._main_menu.event_handling(event)
             if res < 0:
                 return True
             elif res > 0:
-                self._is_game, self._is_exit_to_menu = True, False
+                self._is_game = True
                 self._static_param.game_process.start()
         return False
 
@@ -82,8 +86,8 @@ class CMain:
             # Рисования игры.
             self._static_param.game_process.paint(self._screen)
             if self._is_exit_to_menu:
-                # TODO: Рисование запроса на выход из игры в основное меню.
-                pass
+                # Рисование запроса на выход из игры в основное меню.
+                self._exit_to_menu.paint(self._screen)
         else:
             # Рисование основного меню.
             self._main_menu.paint(self._screen)
