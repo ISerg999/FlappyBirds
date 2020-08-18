@@ -1,3 +1,5 @@
+import os
+
 
 class CResourse:
     """
@@ -28,10 +30,25 @@ class CResourse:
     GAME_LIFE = "game_life"
     GAME_INFO_LINE = "game_info_line"
 
+    # Параметры движения птички - игрока.
+    BIRD_G = 2.0
+    BIRD_SPEED_VERT = 10.0
+    BIRD_SPEED_FLY = 1.0
+
     # Путь к внешним ресурам.
-    PATH_BASE_RESOURSE = "./Resource/"
+    PATH_BASE_RESOURSE = "Resource"
 
     # Внешние ресурсы.
     PATH_STARRY_SKY = "starry-sky-1280_700.png"
     PATH_STARRY_SKY_SHORT = "starry-sky-1280_670.png"
-    PATH_GAME_HEART = "heart-24_21.png"
+    PATH_IMG_HEART = "heart-24_21.png"
+    PATH_IMG_BIRD = "bird.png"
+
+def full_path(res_name:str, base_path:str = CResourse.PATH_BASE_RESOURSE):
+    """
+    Возвращает полный путь для текущей операционной системы.
+    :param res_name: имя ресурса
+    :param base_path: базовый путь
+    :return: полный путь к ресурсу
+    """
+    return os.path.join(base_path, res_name)

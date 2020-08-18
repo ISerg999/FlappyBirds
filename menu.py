@@ -1,6 +1,6 @@
 import pygame
 
-from res import CResourse
+from res import CResourse, full_path
 from static import CStaticParam
 from viewline import CViewLine
 
@@ -34,7 +34,7 @@ class CMainMenu:
         x = int((s_w - t_w) / 2)
         self._obj_txt_exit.pos = (x, y)
         # Получение изображения фона.
-        self._bg_img_surf = pygame.image.load(CResourse.PATH_BASE_RESOURSE + CResourse.PATH_STARRY_SKY)
+        self._bg_img_surf = pygame.image.load(full_path(CResourse.PATH_STARRY_SKY))
 
     def event_handling(self, event):
         """
