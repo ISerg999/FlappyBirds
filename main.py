@@ -1,6 +1,6 @@
 import pygame
 
-from game import CGame
+from game import CGame, CGameInfoLine
 from menu import CMainMenu, CExitToMenu
 from res import CResourse
 from static import CStaticParam
@@ -24,6 +24,7 @@ class CMain:
         self._is_game = self._is_exit_to_menu = False
         self._main_menu = CMainMenu()
         self._exit_to_menu = CExitToMenu()
+        self._static_param.game_info_line = CGameInfoLine()
 
     def run(self):
         """
@@ -81,8 +82,8 @@ class CMain:
         """
         self._screen.fill(CResourse.COLOR_BLACK)
         if self._is_game:
-            # TODO: Рисование верхней информационной полосы.
-            pass
+            # Рисование верхней информационной полосы.
+            self._static_param.game_info_line.paint(self._screen)
             # Рисования игры.
             self._static_param.game_process.paint(self._screen)
             if self._is_exit_to_menu:

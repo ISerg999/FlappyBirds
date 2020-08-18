@@ -21,9 +21,17 @@ class CResourse:
     COLOR_CYANIDE = (0, 255, 255)
     COLOR_MAGENTA = (255, 0, 255)
 
+    # Ключи объектов
+    WINDOW_FULL_SIZE = "win_full_size"
+    GAME_INFO_LINE_SIZE = "game_info_line_size"
+    GAME_PROCESS = "game_process"
+    GAME_LIFE = "game_life"
+    GAME_INFO_LINE = "game_info_line"
+
     # Путь к внешним ресурам.
     PATH_BASE_RESOURSE = "./Resource/"
 
     # Внешние ресурсы.
     PATH_STARRY_SKY = "starry-sky-1280_700.png"
     PATH_STARRY_SKY_SHORT = "starry-sky-1280_670.png"
+    PATH_GAME_HEART = "heart-24_21.png"

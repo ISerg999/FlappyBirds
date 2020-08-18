@@ -18,9 +18,9 @@ class CGame:
     def start(self):
         """
         Начальная инициализация игры.
-        :return:
         """
         self._game_bg.start(0.5)
+        self._static_param.game_life = 3
 
     def event_handling(self, event):
         """
@@ -55,13 +55,25 @@ class CGameInfoLine:
 
     def __init__(self):
         self._static_param = CStaticParam()
+        self._static_param.game_life = 0
+        self._full_rect = (0, 0, self._static_param.full_size[0], self._static_param.game_info_line_size)
+        self._img_life = pygame.image.load(CResourse.PATH_BASE_RESOURSE + CResourse.PATH_GAME_HEART)
+        self._life_width, self._life_height = self._img_life.get_size()
+        self._life_dy = int((self._static_param.game_info_line_size - self._life_height) / 2)
 
     def paint(self, sc):
         """
         Рисование информационной линии.
         :param sc: контекст устройства.
         """
-        pass
+        pygame.draw.rect(sc, CResourse.COLOR_BLACK, self._full_rect)
+        pygame.draw.rect(sc, CResourse.COLOR_WHITE, self._full_rect, 1)
+        r = self._img_life.get_rect()
+        r[0], r[1] = self._static_param.full_size[0] - self._life_width - 3, self._life_dy
+        for i in range(self._static_param.game_life):
+            # Рисование сердечек.
+            sc.blit(self._img_life, r)
+            r[0] -= self._life_width + 2
 
 
 # ----------------------------------------------------------------------------------------------------------------------
