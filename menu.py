@@ -1,6 +1,6 @@
 import pygame
 
-from res import CResourse, full_path
+from res import CResourse
 from static import CStaticParam
 from viewline import CViewLine
 
@@ -34,7 +34,7 @@ class CMainMenu:
         x = int((s_w - t_w) / 2)
         self._obj_txt_exit.pos = (x, y)
         # Получение изображения фона.
-        self._bg_img_surf = pygame.image.load(full_path(CResourse.PATH_STARRY_SKY))
+        self._bg_img_surf, self._bg_rect = CStaticParam.load_image(CResourse.PATH_STARRY_SKY)
 
     def event_handling(self, event):
         """
@@ -58,7 +58,7 @@ class CMainMenu:
         p = pygame.mouse.get_pos()
         self._obj_txt_start.state_text = 1 if self._obj_txt_start.is_pos_in_text(p) else 0
         self._obj_txt_exit.state_text = 1 if self._obj_txt_exit.is_pos_in_text(p) else 0
-        sc.blit(self._bg_img_surf, self._bg_img_surf.get_rect())
+        sc.blit(self._bg_img_surf, self._bg_rect)
         self._obj_txt_start.paint(sc)
         self._obj_txt_exit.paint(sc)
 

@@ -1,7 +1,7 @@
 import pygame
 
 from player import CGameFlayerPlayer
-from res import CResourse, full_path
+from res import CResourse
 from static import CStaticParam
 
 
@@ -58,6 +58,7 @@ class CGame:
         :param sc: контекст устройства.
         """
         self._game_bg.paint(sc)
+        # TODO: Рисование лабиринта
         self._player.paint(sc)
 
     def next_state(self):
@@ -65,7 +66,10 @@ class CGame:
         Вычисление нового состояния игры.
         """
         self._game_bg.next_state()
+        # TODO: Обработка лабиринта.
         self._player.next_state()
+        # TODO: Проверка на вылет за пределы игрового экрана
+        # TODO: Проверка столкновения.
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -79,9 +83,9 @@ class CGameInfoLine:
         self._static_param = CStaticParam()
         self._static_param.game_life = 0
         self._full_rect = (0, 0, self._static_param.full_size[0], self._static_param.game_info_line_size)
-        self._img_life = pygame.image.load(full_path(CResourse.PATH_IMG_HEART))
-        self._life_width, self._life_height = self._img_life.get_size()
-        self._life_dy = int((self._static_param.game_info_line_size - self._life_height) / 2)
+        self._img_life, self._rect_life = CStaticParam.load_image(CResourse.PATH_IMG_HEART)
+        self._life_dy = int((self._static_param.game_info_line_size - self._rect_life[3]) / 2)
+        self._rect_life[1] = self._life_dy
 
     def paint(self, sc):
         """
@@ -90,12 +94,11 @@ class CGameInfoLine:
         """
         pygame.draw.rect(sc, CResourse.COLOR_BLACK, self._full_rect)
         pygame.draw.rect(sc, CResourse.COLOR_WHITE, self._full_rect, 1)
-        r = self._img_life.get_rect()
-        r[0], r[1] = self._static_param.full_size[0] - self._life_width - 3, self._life_dy
+        self._rect_life[0] = self._static_param.full_size[0] - self._rect_life[2] - 3
         for i in range(self._static_param.game_life):
             # Рисование сердечек.
-            sc.blit(self._img_life, r)
-            r[0] -= self._life_width + 2
+            sc.blit(self._img_life, self._rect_life)
+            self._rect_life[0] -= self._rect_life[2] + 2
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -109,8 +112,8 @@ class CGameBG:
         self._static_param = CStaticParam()
         self._offset = self._cur_offset = 0.0
         self._cur_x = 0
-        surf = pygame.image.load(full_path(CResourse.PATH_STARRY_SKY_SHORT))
-        self._width, self._height = surf.get_size()
+        surf, r = CStaticParam.load_image(CResourse.PATH_STARRY_SKY_SHORT)
+        self._width, self._height = r[2], r[3]
         self._bg_img = pygame.Surface((self._width * 2, self._height))
         self._bg_img.blit(surf, (0, 0, self._width, self._height))
         self._bg_img.blit(surf, (self._width, 0, self._width, self._height))

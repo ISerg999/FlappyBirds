@@ -1,6 +1,3 @@
-import os
-
-
 class CResourse:
     """
     Класс ресурсов игры.
@@ -40,15 +37,6 @@ class CResourse:
 
     # Внешние ресурсы.
     PATH_STARRY_SKY = "starry-sky-1280_700.png"
-    PATH_STARRY_SKY_SHORT = "starry-sky-1280_670.png"
-    PATH_IMG_HEART = "heart-24_21.png"
+    PATH_STARRY_SKY_SHORT = "starry-sky-1280_660.png"
+    PATH_IMG_HEART = "heart-32_32.png"
     PATH_IMG_BIRD = "bird.png"
-
-def full_path(res_name:str, base_path:str = CResourse.PATH_BASE_RESOURSE):
-    """
-    Возвращает полный путь для текущей операционной системы.
-    :param res_name: имя ресурса
-    :param base_path: базовый путь
-    :return: полный путь к ресурсу
-    """
-    return os.path.join(base_path, res_name)

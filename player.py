@@ -1,6 +1,7 @@
 import pygame
 
-from res import CResourse, full_path
+from res import CResourse
+from static import CStaticParam
 
 
 class CGameFlayerPlayer:
@@ -22,8 +23,8 @@ class CGameFlayerPlayer:
         self._str_x, self._str_y = x, y
         self._speed_vert, self._g = speed_vert, g
         self._speed_fly = speed_fly
-        self._img_bird = pygame.image.load(full_path(CResourse.PATH_IMG_BIRD))
-        self._width, self._height = self._img_bird.get_size()
+        self._img_bird, r = CStaticParam.load_image(CResourse.PATH_IMG_BIRD)
+        self._width, self._height = r[2], r[3]
         self._width = int(self._width / 3)
         self._r = (
             (0, 0, self._width, self._height),

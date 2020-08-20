@@ -1,3 +1,7 @@
+import os
+
+import pygame
+
 from res import CResourse
 
 
@@ -5,7 +9,6 @@ class CStaticParam:
     """
     Класс статических параметров игры. Синглтон.
     """
-
 
     # _GAME_FLAYER_PLAYER = "game_flayer_player"
     # _GAME_MAZE = "game_maze"
@@ -67,3 +70,23 @@ class CStaticParam:
     @game_info_line.setter
     def game_info_line(self, value):
         self._dict_object.setdefault(CResourse.GAME_INFO_LINE, value)
+
+    @staticmethod
+    def load_image(file_name, color=None):
+        """
+        Загрузка изображения.
+        :param file_name: имя файла
+        :param color: цвет альфа канала
+        :return: поверхность изображения
+        """
+        full_name = os.path.join(CResourse.PATH_BASE_RESOURSE, file_name)
+        try:
+            img = pygame.image.load(full_name)
+        except pygame.error:
+            print("Cannot load image:" + file_name)
+            raise SystemExit
+        if color is not None:
+            if color is -1:
+                color = img.get_at((0, 0))
+            img.set_colorkey(color)
+        return img, img.get_rect()
