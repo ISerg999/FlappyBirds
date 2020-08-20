@@ -23,7 +23,7 @@ class CViewSprStatic(pygame.sprite.Sprite):
         self.rect.y += dy
         (ws, hs) = self.rect.size
         (x, y, ww, hw) = self._static_param.game_win_rect
-        if (self.rect.x <= x - ws) or (self.rect.x >= x + ww) or (self.rect.y <= y - hs) or (self.rect.y >= y + hw):
+        if (self.rect.x < x - ws) or (self.rect.x > x + ww) or (self.rect.y < y - hs) or (self.rect.y > y + hw):
             self.kill()
 
 # ----------------------------------------------------------------------------------------------------------------------
