@@ -22,6 +22,8 @@ class CResourse:
 
     # Ключи объектов
     WINDOW_FULL_SIZE = "win_full_size"
+    GAME_WINDOW_RECT = "game_window_rect"
+    GAME_MOVE_TO = "game_move_to"
     GAME_INFO_LINE_SIZE = "game_info_line_size"
     GAME_PROCESS = "game_process"
     GAME_LIFE = "game_life"

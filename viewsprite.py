@@ -1,29 +1,31 @@
-class CViewSprite:
+import pygame
+
+from static import CStaticParam
+
+
+class CViewSprStatic(pygame.sprite.Sprite):
     """
-    Рисование спрайтов.
+    Рисование спрайтов для статических объектов.
     """
 
-    def __init__(self, img):
-        """
-        Начальная инициализация.
-        :param img: путь к спрайту
-        """
-        self._width = self._height = None
+    def __init__(self, img, x, y, group):
+        pygame.sprite.Sprite.__init__(self)
+        self._static_param = CStaticParam()
+        self.image, self.rect = img, img.get_rect()
+        self.rect.x, self.rect.y = x, y
+        self.add(group)
 
-    @property
-    def width(self):
-        return self._width
-
-    @property
-    def height(self):
-        return self._height
-
-    def paint(self, sc, x, y):
+    def update(self):
         """
-        Рисование спрайта.
-        :param sc: контекст устройства
-        :param x: координата x
-        :param y: координата y
-        :return:
+        Изменение состояния спрайта.
         """
-        pass
+        dx, dy = self._static_param.game_move_to
+        self.rect.x += dx
+        self.rect.y += dy
+        (ws, hs) = self.rect.size
+        (x, y, ww, hw) = self._static_param.game_win_rect
+        if (self.rect.x <= x - ws) or (self.rect.x >= x + ww) or (self.rect.y <= y - hs) or (self.rect.y >= y + hw):
+            self.kill()
+
+# ----------------------------------------------------------------------------------------------------------------------
+

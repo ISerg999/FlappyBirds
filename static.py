@@ -10,7 +10,6 @@ class CStaticParam:
     Класс статических параметров игры. Синглтон.
     """
 
-    # _GAME_FLAYER_PLAYER = "game_flayer_player"
     # _GAME_MAZE = "game_maze"
 
     def __new__(cls):
@@ -34,6 +33,24 @@ class CStaticParam:
     @full_size.setter
     def full_size(self, value):
         self._dict_object.setdefault(CResourse.WINDOW_FULL_SIZE, value)
+
+    # Параметры размера игрового окна.
+    @property
+    def game_win_rect(self):
+        return self._dict_object.get(CResourse.GAME_WINDOW_RECT)
+
+    @game_win_rect.setter
+    def game_win_rect(self, value):
+        self._dict_object.setdefault(CResourse.GAME_WINDOW_RECT, value)
+
+    # Текущее смещение статических объектов в игре.
+    @property
+    def game_move_to(self):
+        return self._dict_object.get(CResourse.GAME_MOVE_TO)
+
+    @game_move_to.setter
+    def game_move_to(self, value):
+        self._dict_object.setdefault(CResourse.GAME_MOVE_TO, value)
 
     # Высота игровой информационной полосы.
     @property

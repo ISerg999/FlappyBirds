@@ -15,6 +15,9 @@ class CMain:
         self._static_param = CStaticParam()
         self._static_param.full_size = (1280, 700)
         self._static_param.game_info_line_size = 40
+        self._static_param.game_win_rect = (0, self._static_param.game_info_line_size, self._static_param.full_size[0],
+                                            self._static_param.full_size[1] - self._static_param.game_info_line_size)
+        self._static_param.game_move_to = (0, 0)
         self._fps = 30
         self._static_param.game_process = CGame()
         pygame.init()
