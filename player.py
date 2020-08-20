@@ -18,18 +18,18 @@ class CGameFlayerPlayer:
         :param speed_vert: смещение при перемещении вверх или вниз
         :param speed_fly: скрость махания крыльями
         """
+        self._image, r = CStaticParam.load_image(CResourse.PATH_IMG_BIRD)
+        w = int(r[2] / 3)
+        self._str_pos = (x, y)
+        self._rect = [x, y, w, r[3]]
         self._is_move = self._y = self._curr_pos_type = 0
         self._curr_vert = self._cur_pos_fly = 0.0
-        self._str_x, self._str_y = x, y
         self._speed_vert, self._g = speed_vert, g
         self._speed_fly = speed_fly
-        self._img_bird, r = CStaticParam.load_image(CResourse.PATH_IMG_BIRD)
-        self._width, self._height = r[2], r[3]
-        self._width = int(self._width / 3)
-        self._r = (
-            (0, 0, self._width, self._height),
-            (self._width, 0, self._width, self._height),
-            (2 * self._width, 0, self._width, self._height),
+        self._spr_win = (
+            (0, 0, w, r[3]),
+            (w, 0, w, r[3]),
+            (2 * w, 0, w, r[3]),
         )
 
     def start(self):
@@ -37,18 +37,26 @@ class CGameFlayerPlayer:
         Инициализация в начале игры.
         """
         self._curr_vert = self._cur_pos_fly = 0.0
-        self._y = self._str_y
+        (self._rect[0], self._rect[1]) = self._str_pos
         self._speed_fly = abs(self._speed_fly)
         self._curr_pos_type = 1
         self._is_move = 0
 
     @property
-    def pos(self):
-        return self._str_x, self._y
+    def rect(self):
+        return self._rect
+
+    @rect.setter
+    def rect(self, r):
+        self._rect = r
 
     @property
     def size(self):
-        return self._width, self._height
+        return self._rect[2], self._rect[3]
+
+    @property
+    def pos(self):
+        return self._rect[0], self._rect[1]
 
     @property
     def is_move(self):
@@ -63,16 +71,16 @@ class CGameFlayerPlayer:
         Рисование летуна.
         :param sc: контекст устройства.
         """
-        sc.blit(self._img_bird, self.pos, self._r[self._curr_pos_type])
+        sc.blit(self._image, self.pos, self._spr_win[self._curr_pos_type])
 
-    def next_state(self):
+    def update(self):
         """
         Расчёт нового состояния летуна.
         """
         self._curr_vert += self._g + self._is_move * self._speed_vert
         t = int(self._curr_vert)
         self._curr_vert -= t
-        self._y += t
+        self._rect[1] += t
         self._cur_pos_fly += self._speed_fly
         if (self._cur_pos_fly >= 2.0) or (self._cur_pos_fly <= -2.0):
             self._speed_fly = -self._speed_fly

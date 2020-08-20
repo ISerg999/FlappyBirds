@@ -61,13 +61,13 @@ class CGame:
         # TODO: Рисование лабиринта
         self._player.paint(sc)
 
-    def next_state(self):
+    def update(self):
         """
         Вычисление нового состояния игры.
         """
         self._game_bg.next_state()
         # TODO: Обработка лабиринта.
-        self._player.next_state()
+        self._player.update()
         # TODO: Проверка на вылет за пределы игрового экрана
         # TODO: Проверка столкновения.
 

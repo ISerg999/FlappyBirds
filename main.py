@@ -39,7 +39,7 @@ class CMain:
             # Рисование.
             self._paint()
             # Подготовка новых данных.
-            self._next_state()
+            self._update()
             pygame.time.delay(20)
 
     def _analize_event(self, event):
@@ -94,13 +94,13 @@ class CMain:
             self._main_menu.paint(self._screen)
         pygame.display.flip()
 
-    def _next_state(self):
+    def _update(self):
         """
         Расчёт новых состояний, если это необходимо.
         """
         if self._is_game and not self._is_exit_to_menu:
             # Расчёт новых игровых состояний.
-            self._static_param.game_process.next_state()
+            self._static_param.game_process.update()
 
 
 if __name__ == '__main__':
