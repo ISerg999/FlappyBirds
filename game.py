@@ -1,5 +1,6 @@
 import pygame
 
+from maze import CGameMaze
 from player import CGameFlayerPlayer
 from res import CResourse
 from static import CStaticParam
@@ -16,6 +17,7 @@ class CGame:
         self._game_bg = CGameBG()
         self._player = CGameFlayerPlayer(80, int((self._static_param.full_size[1] - 24) / 2),
                                          CResourse.BIRD_G, CResourse.BIRD_SPEED_VERT, CResourse.BIRD_SPEED_FLY)
+        self._game_maze = None
         self.start()
 
     def start(self):
@@ -25,6 +27,7 @@ class CGame:
         self._game_bg.start(0.5)
         self._static_param.game_life = 3
         self._player.start()
+        self._game_maze = CGameMaze(CResourse.MAZE_BASE_SPEED, CResourse.MAZE_PERCENT_DIFF_SPEED)
 
     def event_handling(self, event):
         """
@@ -58,7 +61,7 @@ class CGame:
         :param sc: контекст устройства.
         """
         self._game_bg.paint(sc)
-        # TODO: Рисование лабиринта
+        self._game_maze.paint(sc)
         self._player.paint(sc)
 
     def update(self):
@@ -66,7 +69,7 @@ class CGame:
         Вычисление нового состояния игры.
         """
         self._game_bg.next_state()
-        # TODO: Обработка лабиринта.
+        self._game_maze.update()
         self._player.update()
         # TODO: Проверка на вылет за пределы игрового экрана
         # TODO: Проверка столкновения.

@@ -15,11 +15,10 @@ class CViewSprStatic(pygame.sprite.Sprite):
         self.rect.x, self.rect.y = x, y
         self.add(group)
 
-    def update(self):
+    def update(self, dx, dy):
         """
         Изменение состояния спрайта.
         """
-        dx, dy = self._static_param.game_move_to
         self.rect.x += dx
         self.rect.y += dy
         (ws, hs) = self.rect.size

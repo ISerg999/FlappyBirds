@@ -13,11 +13,13 @@ class CMain:
 
     def __init__(self):
         self._static_param = CStaticParam()
+        gsbs = (40, 20)
         self._static_param.full_size = (1280, 700)
         self._static_param.game_info_line_size = 40
         self._static_param.game_win_rect = (0, self._static_param.game_info_line_size, self._static_param.full_size[0],
                                             self._static_param.full_size[1] - self._static_param.game_info_line_size)
-        self._static_param.game_move_to = (0, 0)
+        self._static_param.game_win_spr_size = (int(self._static_param.game_win_rect[2] / gsbs[0]),
+                                                int(self._static_param.game_win_rect[3] / gsbs[1]))
         self._fps = 30
         self._static_param.game_process = CGame()
         pygame.init()
