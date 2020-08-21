@@ -38,6 +38,9 @@ class CResourse:
     MAZE_BASE_SPEED = 1.0
     MAZE_PERCENT_DIFF_SPEED = 50.0
 
+    # Параметры управления платформы.
+    MAZE_PLATFORM_DELAY = 4
+
     # Индексы игровых спрайтов.
     SPR_DYN_WALL_DOWN_0 = 0
     SPR_DYN_WALL_DOWN_1 = 1
@@ -47,7 +50,7 @@ class CResourse:
     SPR_DYN_WALL_UP_2 = 5
     SPR_DYN_PLATFORM_DOWN_0 = 6
     SPR_DYN_PLATFORM_DOWN_1 = 7
-    SPR_DYN_PLATFORM_DOWN_0 = 8
+    SPR_DYN_PLATFORM_DOWN_2 = 8
     SPR_DYN_PLATFORM_UP_0 = 9
     SPR_DYN_PLATFORM_UP_1 = 10
     SPR_DYN_PLATFORM_UP_2 = 11
