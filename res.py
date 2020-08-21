@@ -41,6 +41,9 @@ class CResourse:
     # Параметры управления платформы.
     MAZE_PLATFORM_DELAY = 4
 
+    # Скорость полёта выстрела.
+    GAME_FIRE_SPEED = 5
+
     # Индексы игровых спрайтов.
     SPR_DYN_WALL_DOWN_0 = 0
     SPR_DYN_WALL_DOWN_1 = 1
@@ -82,6 +85,6 @@ class CResourse:
     PATH_STARRY_SKY_SHORT = "starry-sky-1280_660.png"
     PATH_IMG_HEART = "heart-32_32.png"
     PATH_IMG_BIRD = "bird.png"
-    GROUP_STATIC_SPR = ("maze_static_spr.png", 20, (40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 20, 20))
+    GROUP_STATIC_SPR = ("maze_static_spr.png", 20, (40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 10, 10))
     GROUP_DYNAMIC_SPR = ("maze_dynamic_spr.png", 20, (20, 20, 20, 20, ))
     PATH_MAZE_CODE = "labirint.mz"

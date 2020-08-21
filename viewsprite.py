@@ -98,3 +98,75 @@ class CViewSprPlatform(pygame.sprite.Sprite):
             if len(self._stack) > 0:
                 spr = self._stack.pop()
                 spr.kill()
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+class CViewSprShooter(pygame.sprite.Sprite):
+
+    def __init__(self, img, x, y, offset, group, img_constr, group_d):
+        pygame.sprite.Sprite.__init__(self)
+        self._static_param = CStaticParam()
+        self.image, self.rect = img, img.get_rect()
+        self.rect.x, self.rect.y = x, y
+        self.add(group)
+        self._group_st = group
+        self._group_dy = group_d
+        self._offset = offset
+        self._img_constr = img_constr
+        self._is_fire = True
+
+    def update(self, dx, dy):
+        """
+        Изменение состояния спрайта.
+        :param dx: смещение положения по x
+        :param dy: смещения положения по y
+        """
+        self.rect.x += dx
+        self.rect.y += dy
+        (ws, hs) = self.rect.size
+        (x, y, ww, hw) = self._static_param.game_win_rect
+        if (self.rect.x < x - ws) or (self.rect.x > x + ww) or (self.rect.y < y - hs) or (self.rect.y > y + hw):
+            self.kill()
+        else:
+            if self._is_fire:
+                self._is_fire = False
+                # Создание выстрела.
+                new_img = pygame.Surface((self._img_constr[1][2], self._img_constr[1][3]))
+                new_img.blit(self._img_constr[0], (0, 0), self._img_constr[1])
+                CViewSprFire(new_img, self.rect.x, self.rect.y + self._offset * hs, self._offset, ws,
+                             self._group_dy, self._group_st, self.new_fire)
+
+    def new_fire(self):
+        self._is_fire = True
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+class CViewSprFire(pygame.sprite.Sprite):
+
+    def __init__(self, img, x, y, dy, width, group, gr_tst, fun_fire):
+        pygame.sprite.Sprite.__init__(self)
+        self._static_param = CStaticParam()
+        self.image, self.rect = img, img.get_rect()
+        t = int((width - self.rect[2]) / 2)
+        self.rect.x, self.rect.y = x + t, y
+        self.add(group)
+        self._group_st = gr_tst
+        self._dy = dy
+        self._fun_fire = fun_fire
+
+    def update(self, dx, dy):
+        """
+        Изменение состояния спрайта.
+        :param dx: смещение положения по x
+        :param dy: смещения положения по y
+        """
+        self.rect.x += dx
+        self.rect.y += self._dy * CResourse.GAME_FIRE_SPEED
+        (ws, hs) = self.rect.size
+        (x, y, ww, hw) = self._static_param.game_win_rect
+        if (self.rect.x < x - ws) or (self.rect.x > x + ww) or (self.rect.y < y - hs) or (self.rect.y > y + hw) \
+                or pygame.sprite.spritecollideany(self, self._group_st):
+            self._fun_fire()
+            self.kill()

@@ -1,10 +1,11 @@
 import os
+import random
 
 import pygame
 
 from res import CResourse
 from static import CStaticParam
-from viewsprite import CViewSprStatic, CViewSprPlatform
+from viewsprite import CViewSprStatic, CViewSprPlatform, CViewSprShooter
 
 
 class CGameMaze:
@@ -19,7 +20,8 @@ class CGameMaze:
         :param percent_diff_offset: процент максимального увеличения скорости от базовой
         """
         self._static_param = CStaticParam()
-        self._base_offset = base_offset
+        self._base_offset = self._start_offset = base_offset
+        self._inc_offset = 0.25 * base_offset
         self._max_offset = self._base_offset * (1.0 + percent_diff_offset / 100.0)
         self._cur_v_off = self._base_offset
         self._cur_off = 0.0
@@ -112,16 +114,16 @@ class CMazeCode:
         self._width, self._height = static_spr[2][0], static_spr[1]
         self._img_st_spr, _ = self._static_param.load_image(static_spr[0])
         x = 0
-        self._rect_in_spr_st = [(x, 0, static_spr[2][0], self._height), ]
-        for i in range(1, len(static_spr[2])):
-            x += static_spr[2][i - 1]
-            self._rect_in_spr_st.append((x, 0, static_spr[2][i], self._height))
+        self._rect_in_spr_st = []
+        for ws in static_spr[2]:
+            self._rect_in_spr_st.append((x, 0, ws, self._height))
+            x += ws
         self._img_dy_spr, _ = self._static_param.load_image(dynamic_spr[0])
         x = 0
-        self._rect_in_spr_dy = [(x, 0, dynamic_spr[2][0], self._height), ]
-        for i in range(1, len(dynamic_spr[2])):
-            x += dynamic_spr[2][i - 1]
-            self._rect_in_spr_dy.append((x, 0, dynamic_spr[2][i], self._height))
+        self._rect_in_spr_dy = []
+        for ws in dynamic_spr[2]:
+            self._rect_in_spr_dy.append((x, 0, ws, self._height))
+            x += ws
         self._offset = 0
         self._group_maze_st = pygame.sprite.Group()
         self._group_maze_pl = pygame.sprite.Group()
@@ -157,27 +159,39 @@ class CMazeCode:
                 # Создание статической нижней стенки.
                 yd = self._create_wall(ll, x, yd, -1, CResourse.SPR_DYN_WALL_DOWN_0, CResourse.SPR_DYN_WALL_DOWN_1,
                                        CResourse.SPR_DYN_WALL_DOWN_2)
+                if cur_line[4] == CResourse.MAZ_TYPE_SHOOTER_DOWN:
+                    # Создание нижнего стрелка.
+                    self._create_shooter(x, yd, -1, CResourse.SPR_DYN_SHOOTER_DOWN, CResourse.SPR_DYN_FIRE_DOWN)
             else:
                 # Создание нижней динамической платформы.
-                yd = self._create_platform(ll, x, yd, -1, CResourse.SPR_DYN_PLATFORM_DOWN_0,
-                                           CResourse.SPR_DYN_PLATFORM_DOWN_1, CResourse.SPR_DYN_PLATFORM_DOWN_2)
-            if cur_line[4] == CResourse.MAZ_TYPE_SHOOTER_DOWN:
-                # Создание нижнего стрелка.
-                self._create_shooter(x, yd, -1)
+                self._create_platform(ll, x, yd, -1, CResourse.SPR_DYN_PLATFORM_DOWN_0,
+                                      CResourse.SPR_DYN_PLATFORM_DOWN_1, CResourse.SPR_DYN_PLATFORM_DOWN_2)
             ll = self._static_param.game_win_spr_size[1] - cur_line[0] - cur_line[1]
             if cur_line[3] == CResourse.MAZ_TYPE_WALL:
                 # Создание статической верхней стенки.
                 yu = self._create_wall(ll, x, yu, 1, CResourse.SPR_DYN_WALL_UP_0, CResourse.SPR_DYN_WALL_UP_1,
                                        CResourse.SPR_DYN_WALL_UP_2)
+                if cur_line[4] == CResourse.MAZ_TYPE_SHOOTER_UP:
+                    # Создание верхнего стрелка.
+                    self._create_shooter(x, yu, 1, CResourse.SPR_DYN_SHOOTER_UP, CResourse.SPR_DYN_FIRE_UP)
             else:
                 # Создание верхней динамической платформы.
-                yu = self._create_platform(ll, x, yu, 1, CResourse.SPR_DYN_PLATFORM_UP_0,
-                                           CResourse.SPR_DYN_PLATFORM_UP_1, CResourse.SPR_DYN_PLATFORM_UP_2)
-            if cur_line[4] == CResourse.MAZ_TYPE_SHOOTER_UP:
-                # Создание верхнего стрелка.
-                self._create_shooter(x, yu, 1)
+                self._create_platform(ll, x, yu, 1, CResourse.SPR_DYN_PLATFORM_UP_0,
+                                      CResourse.SPR_DYN_PLATFORM_UP_1, CResourse.SPR_DYN_PLATFORM_UP_2)
+            if cur_line[4] == CResourse.MAZ_TYPE_FLY_HEART:
+                # TODO: Создание артифакта жизни.
+                pass
+            elif cur_line[4] == CResourse.MAZ_TYPE_FLY_BRAKING:
+                # TODO: Создание артифакта замедления.
+                pass
+            elif cur_line[4] == CResourse.MAZ_TYPE_FLY_ACCELERATION:
+                # TODO: Создание артифакта ускорения.
+                pass
+            elif cur_line[4] == CResourse.MAZ_TYPE_FLY_PARALYSIS:
+                # TODO: Создание артифакта парализации.
+                pass
 
-    def _create_shooter(self, x, y, d):
+    def _create_shooter(self, x, y, d, spr, spr_fire):
         """
         Создание нижнего стрелка.
         :param x: координата x
@@ -185,7 +199,12 @@ class CMazeCode:
         :param d: направление стрельбы
         :return: новая доступная координата y
         """
-        # TODO: Создание стрелка.
+        info_img = self._rect_in_spr_st[spr]
+        new_img = pygame.Surface((info_img[2], info_img[3]))
+        new_img.blit(self._img_st_spr, (0, 0), info_img)
+        CViewSprShooter(new_img, x, y, d, self._group_maze_st,
+                        (self._img_st_spr, self._rect_in_spr_st[spr_fire]), self._group_maze_pl)
+        y += d * info_img[3]
         return y
 
     def _create_wall(self, ll, x, y, d, sp_0, sp_1, sp_2):
@@ -285,4 +304,15 @@ class CMazeParametrFromFile(CMazeParametrBase):
         self._ind += 1
         t1 = int(t0 / 16)
         t0 = t0 - t1 * 16
+        if t0 >= CResourse.MAZ_TYPE_FLY_HEART:
+            if t1 == 0:
+                t1 = random.randint(0, l_c - 2) + 1
+            else:
+                t1 = t1 + int(l_c / 2) - 8
+                if t1 < 1:
+                    t1 = 1
+                if t1 > l_c - 2:
+                    t1 = l_c - 2
+                t1 += l_d
+                t1 = -t1
         return l_d, l_c, k0, k1, t0, t1
