@@ -1,3 +1,5 @@
+import os
+
 import pygame
 
 from res import CResourse
@@ -22,7 +24,7 @@ class CGameMaze:
         self._cur_v_off = self._base_offset
         self._cur_off = 0.0
         self._static_param.game_move_to = (0, 0)
-        self._maze_param = CMazeParametr()
+        self._maze_param = CMazeParametrFromFile()
         self._maze_code = CMazeCode(CResourse.GROUP_STATIC_SPR, CResourse.GROUP_DYNAMIC_SPR, self._maze_param)
 
     def paint(self, sc):
@@ -64,16 +66,23 @@ class CGameMaze:
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-class CMazeParametr:
+class CMazeParametrBase:
     """
-    Класс задающий параметры рисования лабиринта.
+    Класс выдающий кодированную линию лабиринта базовый.
     """
 
     def __init__(self):
         self._test_max = 4
         self._test_cur = self._test_max
         self._test_type = 0
-        pass
+        self._r0 = (
+            2, 23, CResourse.MAZ_TYPE_WALL, CResourse.MAZ_TYPE_WALL, CResourse.MAZ_TYPE_NONE, CResourse.MAZ_TYPE_NONE)
+        self._r1 = (
+            (2, 23, CResourse.MAZ_TYPE_PLATFORM, CResourse.MAZ_TYPE_WALL, CResourse.MAZ_TYPE_NONE,
+             CResourse.MAZ_TYPE_NONE),
+            (2, 23, CResourse.MAZ_TYPE_WALL, CResourse.MAZ_TYPE_PLATFORM, CResourse.MAZ_TYPE_NONE,
+             CResourse.MAZ_TYPE_NONE),
+        )
 
     def next_game_line(self):
         """
@@ -81,16 +90,11 @@ class CMazeParametr:
         :return: парметры игровой линии: (высота нижней стенки, высота промежутка,
         тип нижней стенки, тип верхней стенки, объекты на стенке, объекты в полёте)
         """
-        r0 = (2, 23, CResourse.MAZ_TYPE_WALL, CResourse.MAZ_TYPE_WALL, CResourse.MAZ_TYPE_NONE, CResourse.MAZ_TYPE_NONE)
-        r1 = (
-            (2, 23, CResourse.MAZ_TYPE_PLATFORM, CResourse.MAZ_TYPE_WALL, CResourse.MAZ_TYPE_NONE, CResourse.MAZ_TYPE_NONE),
-            (2, 23, CResourse.MAZ_TYPE_WALL, CResourse.MAZ_TYPE_PLATFORM, CResourse.MAZ_TYPE_NONE, CResourse.MAZ_TYPE_NONE),
-        )
         self._test_cur -= 1
-        res = r0
+        res = self._r0
         if self._test_cur < 1:
             self._test_cur = self._test_max
-            res = r1[self._test_type]
+            res = self._r1[self._test_type]
             self._test_type = 1 - self._test_type
         return res
 
@@ -102,7 +106,7 @@ class CMazeCode:
     Класс кодирующий лабиринт, не зваисящий от внешнего вида.
     """
 
-    def __init__(self, static_spr, dynamic_spr, labirint: CMazeParametr):
+    def __init__(self, static_spr, dynamic_spr, labirint: CMazeParametrBase):
         self._static_param = CStaticParam()
         self._lab = labirint
         self._width, self._height = static_spr[2][0], static_spr[1]
@@ -121,7 +125,6 @@ class CMazeCode:
         self._offset = 0
         self._group_maze_st = pygame.sprite.Group()
         self._group_maze_pl = pygame.sprite.Group()
-        # TODO: Создание группы стрелков, выстрелов, летающих плюшек.
 
     @property
     def get_group_spr(self):
@@ -248,5 +251,38 @@ class CMazeCode:
             new_img = pygame.Surface((info_img[2], info_img[3]))
             new_img.blit(self._img_st_spr, (0, 0), info_img)
             CViewSprPlatform((self._img_st_spr, self._rect_in_spr_st[sp_1]), new_img, x, y, d * info_img[3],
-                             self._group_maze_pl, self._group_maze_st, self.get_group_spr)
+                             self._group_maze_pl, self._group_maze_st)
         return y
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+class CMazeParametrFromFile(CMazeParametrBase):
+
+    def __init__(self):
+        full_name = os.path.join(CResourse.PATH_BASE_RESOURSE, CResourse.PATH_MAZE_CODE)
+        with open(full_name, 'rb') as file_t:
+            self._barray = file_t.read()
+        self._ind = 0
+
+    def next_game_line(self):
+        """
+        Получает следующую игровую линию.
+        :return: парметры игровой линии: (высота нижней стенки, высота промежутка,
+        тип нижней стенки, тип верхней стенки, объекты на стенке, объекты в полёте)
+        """
+        if self._ind > len(self._barray) - 4:
+            self._ind = 0
+        l_d = int(self._barray[self._ind])
+        self._ind += 1
+        l_c = int(self._barray[self._ind])
+        self._ind += 1
+        k0 = int(self._barray[self._ind])
+        self._ind += 1
+        k1 = int(k0 / 16)
+        k0 = k0 - k1 * 16
+        t0 = int(self._barray[self._ind])
+        self._ind += 1
+        t1 = int(t0 / 16)
+        t0 = t0 - t1 * 16
+        return l_d, l_c, k0, k1, t0, t1

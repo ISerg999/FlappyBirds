@@ -35,7 +35,7 @@ class CResourse:
     BIRD_SPEED_FLY = 1.0
 
     # Параметры смещения лабиринта.
-    MAZE_BASE_SPEED = 1.0
+    MAZE_BASE_SPEED = 2.0 # 1.0
     MAZE_PERCENT_DIFF_SPEED = 50.0
 
     # Параметры управления платформы.
@@ -69,10 +69,10 @@ class CResourse:
     MAZ_TYPE_PLATFORM = 2
     MAZ_TYPE_SHOOTER_DOWN = 1
     MAZ_TYPE_SHOOTER_UP = 2
-    MAZ_TYPE_FLY_HEART = 1
-    MAZ_TYPE_FLY_BRAKING = 2
-    MAZ_TYPE_FLY_ACCELERATION = 3
-    MAZ_TYPE_FLY_PARALYSIS = 4
+    MAZ_TYPE_FLY_HEART = 3
+    MAZ_TYPE_FLY_BRAKING = 4
+    MAZ_TYPE_FLY_ACCELERATION = 5
+    MAZ_TYPE_FLY_PARALYSIS = 6
 
     # Путь к внешним ресурам.
     PATH_BASE_RESOURSE = "Resource"
@@ -84,3 +84,4 @@ class CResourse:
     PATH_IMG_BIRD = "bird.png"
     GROUP_STATIC_SPR = ("maze_static_spr.png", 20, (40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 20, 20))
     GROUP_DYNAMIC_SPR = ("maze_dynamic_spr.png", 20, (20, 20, 20, 20, ))
+    PATH_MAZE_CODE = "labirint.mz"

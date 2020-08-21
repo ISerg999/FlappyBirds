@@ -37,7 +37,7 @@ class CViewSprPlatform(pygame.sprite.Sprite):
     Рисование спрайтов для движущейся платформы.
     """
 
-    def __init__(self, img_constr, img_2, x, y, offset, group, group_st, group_all):
+    def __init__(self, img_constr, img_2, x, y, offset, group, group_st):
         pygame.sprite.Sprite.__init__(self)
         self._static_param = CStaticParam()
         self.image, self.rect = img_2, img_2.get_rect()
@@ -48,7 +48,6 @@ class CViewSprPlatform(pygame.sprite.Sprite):
         self._offset = offset
         self._move_to = True
         self._group_st = group_st
-        self._group_all = group_all
         self._stack = []
         self._delay = CResourse.MAZE_PLATFORM_DELAY
 
@@ -80,13 +79,7 @@ class CViewSprPlatform(pygame.sprite.Sprite):
         Увеличение размера платформы.
         """
         self.rect.y += self._offset
-        is_conflict = False
-        for gr in self._group_all:
-            is_conflict = pygame.sprite.spritecollideany(self, gr)
-            is_conflict = False if is_conflict is self else is_conflict
-            if is_conflict:
-                break
-        if is_conflict:
+        if pygame.sprite.spritecollideany(self, self._group_st):
             self.rect.y -= self._offset
             self._move_to = False
         else:
