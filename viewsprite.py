@@ -103,6 +103,9 @@ class CViewSprPlatform(pygame.sprite.Sprite):
 # ----------------------------------------------------------------------------------------------------------------------
 
 class CViewSprShooter(pygame.sprite.Sprite):
+    """
+    Рисование спрайтов для стрелков.
+    """
 
     def __init__(self, img, x, y, offset, group, img_constr, group_d):
         pygame.sprite.Sprite.__init__(self)
@@ -144,6 +147,9 @@ class CViewSprShooter(pygame.sprite.Sprite):
 # ----------------------------------------------------------------------------------------------------------------------
 
 class CViewSprFire(pygame.sprite.Sprite):
+    """
+    Рисование спрайтов для выстрелов.
+    """
 
     def __init__(self, img, x, y, dy, width, group, gr_tst, fun_fire):
         pygame.sprite.Sprite.__init__(self)
@@ -169,4 +175,37 @@ class CViewSprFire(pygame.sprite.Sprite):
         if (self.rect.x < x - ws) or (self.rect.x > x + ww) or (self.rect.y < y - hs) or (self.rect.y > y + hw) \
                 or pygame.sprite.spritecollideany(self, self._group_st):
             self._fun_fire()
+            self.kill()
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+class CViewSprArt(pygame.sprite.Sprite):
+    """
+    Рисование спрайтов для летящих артефактов.
+    """
+
+    def __init__(self, img, x, y, group, type_ar):
+        pygame.sprite.Sprite.__init__(self)
+        self._static_param = CStaticParam()
+        self.image, self.rect = img, img.get_rect()
+        self.rect.x, self.rect.y = x, y
+        self.add(group)
+        self._type_ar = type_ar
+
+    @property
+    def type_ar(self):
+        return self._type_ar
+
+    def update(self, dx, dy):
+        """
+        Изменение состояния спрайта.
+        :param dx: смещение положения по x
+        :param dy: смещения положения по y
+        """
+        self.rect.x += dx
+        self.rect.y += dy
+        (ws, hs) = self.rect.size
+        (x, y, ww, hw) = self._static_param.game_win_rect
+        if (self.rect.x < x - ws) or (self.rect.x > x + ww) or (self.rect.y < y - hs) or (self.rect.y > y + hw):
             self.kill()

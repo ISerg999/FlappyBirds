@@ -5,7 +5,7 @@ import pygame
 
 from res import CResourse
 from static import CStaticParam
-from viewsprite import CViewSprStatic, CViewSprPlatform, CViewSprShooter
+from viewsprite import CViewSprStatic, CViewSprPlatform, CViewSprShooter, CViewSprArt
 
 
 class CGameMaze:
@@ -127,10 +127,11 @@ class CMazeCode:
         self._offset = 0
         self._group_maze_st = pygame.sprite.Group()
         self._group_maze_pl = pygame.sprite.Group()
+        self._group_maze_ar = pygame.sprite.Group()
 
     @property
     def get_group_spr(self):
-        return self._group_maze_st, self._group_maze_pl
+        return self._group_maze_st, self._group_maze_pl, self._group_maze_ar
 
     def paint(self, sc):
         """
@@ -149,7 +150,7 @@ class CMazeCode:
             elem.update(dx, 0)
         self._offset += dx
         xs, ys, ws, hs = self._static_param.game_win_rect
-        x = xs + ws + self._offset
+        x = xs + ws + self._offset + self._rect_in_spr_st[0][2]
         yu, yd = ys, ys + hs - self._height
         if self._offset <= -self._width:
             self._offset += self._width
@@ -178,18 +179,16 @@ class CMazeCode:
                 # Создание верхней динамической платформы.
                 self._create_platform(ll, x, yu, 1, CResourse.SPR_DYN_PLATFORM_UP_0,
                                       CResourse.SPR_DYN_PLATFORM_UP_1, CResourse.SPR_DYN_PLATFORM_UP_2)
-            if cur_line[4] == CResourse.MAZ_TYPE_FLY_HEART:
-                # TODO: Создание артифакта жизни.
-                pass
-            elif cur_line[4] == CResourse.MAZ_TYPE_FLY_BRAKING:
-                # TODO: Создание артифакта замедления.
-                pass
-            elif cur_line[4] == CResourse.MAZ_TYPE_FLY_ACCELERATION:
-                # TODO: Создание артифакта ускорения.
-                pass
-            elif cur_line[4] == CResourse.MAZ_TYPE_FLY_PARALYSIS:
-                # TODO: Создание артифакта парализации.
-                pass
+            if (cur_line[4] >= CResourse.MAZ_TYPE_FLY_HEART) or (cur_line[4] <= CResourse.MAZ_TYPE_FLY_PARALYSIS):
+                # Создание артифактов.
+                y = ys + hs + cur_line[5] * self._rect_in_spr_st[0][3]
+                self._create_flayer_artefact(cur_line[4], x, y)
+
+    def _create_flayer_artefact(self, spr_ar, x, y):
+        info_img = self._rect_in_spr_dy[spr_ar - CResourse.MAZ_TYPE_FLY_HEART]
+        new_img = pygame.Surface((info_img[2], info_img[3]))
+        new_img.blit(self._img_dy_spr, (0, 0), info_img)
+        CViewSprArt(new_img, x, y, self._group_maze_ar, spr_ar)
 
     def _create_shooter(self, x, y, d, spr, spr_fire):
         """
@@ -313,6 +312,6 @@ class CMazeParametrFromFile(CMazeParametrBase):
                     t1 = 1
                 if t1 > l_c - 2:
                     t1 = l_c - 2
-                t1 += l_d
-                t1 = -t1
+            t1 += l_d
+            t1 = -t1
         return l_d, l_c, k0, k1, t0, t1

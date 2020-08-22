@@ -102,6 +102,6 @@ class CStaticParam:
             raise SystemExit
         if colorkey is not None:
             if not isinstance(colorkey, tuple) and colorkey == -1:
-                color = img.get_at((0, 0))
-            img.set_colorkey(color)
+                colorkey = img.get_at((0, 0))
+            img.set_colorkey(colorkey)
         return img, img.get_rect()
