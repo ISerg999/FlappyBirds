@@ -13,21 +13,28 @@ class CGameMaze:
     Класс рисования и управления самим лабиринтом.
     """
 
-    def __init__(self, base_offset, percent_diff_offset):
-        """
-        Инициализация класса
-        :type base_offset: базовая скорость смещения
-        :param percent_diff_offset: процент максимального увеличения скорости от базовой
-        """
+    def __init__(self):
+        self._base_offset = self._max_offset = self._cur_v_off = self._cur_off = self._distance = None
+        self._cur_player_off = None
         self._static_param = CStaticParam()
-        self._base_offset = base_offset
-        self._inc_offset = base_offset * CResourse.MAZE_INCREMENT
-        self._max_offset = self._base_offset * (1.0 + percent_diff_offset / 100.0)
-        self._cur_v_off = self._base_offset
-        self._cur_off = 0.0
-        self._distance = CResourse.MAZE_DISTANCE
+        self._start_offset = CResourse.MAZE_BASE_SPEED
+        self._inc_offset = CResourse.MAZE_INCREMENT
+        self._player_max_speed = CResourse.PLAYER_MAX_SPEED
+        self._inc_player_speed = CResourse.PLAYER_SPEED_INCREMENT
         self._maze_param = CMazeParametrFromFile()
         self._maze_code = CMazeCode(CResourse.GROUP_STATIC_SPR, CResourse.GROUP_DYNAMIC_SPR, self._maze_param)
+        self.recovery_distance()
+
+    def recovery_distance(self):
+        """
+        Восстановление дистанции. Вызвается либо в начале, либо в момент смерти.
+        """
+        self._base_offset = self._start_offset
+        self._cur_v_off = self._base_offset
+        self._cur_off = 0.0
+        self._cur_player_off = 0.0
+        self._distance = CResourse.MAZE_DISTANCE
+        self._maze_code.shift_maze(CResourse.MAZE_RECOVERY_DISTANCE)
 
     def paint(self, sc):
         """
@@ -40,37 +47,35 @@ class CGameMaze:
         """
         Смещение всего игрового поля.
         """
-        self._cur_off += self._cur_v_off
+        self._cur_off += self._cur_v_off + self._cur_player_off
         t = int(self._cur_off)
         self._cur_off -= t
         self._maze_code.update(-t)
         self._distance -= 1
         if self._distance < 1:
             self._base_offset += self._inc_offset
-            self._max_offset += self._inc_offset
             self._cur_v_off += self._inc_offset
             self._distance = CResourse.MAZE_DISTANCE
 
-    def change_add_offset(self, delta):
-        """
-        Изменение прибавочного смещениия.
-        :param delta: прибавочное смещение
-        """
-        self._cur_v_off += delta
-        if self._cur_v_off >= self._max_offset:
-            self._cur_v_off = self._max_offset
-        if self._cur_v_off <= self._base_offset:
-            self._cur_v_off = self._base_offset
-
-    def collision_checking(self, rect):
+    def collision_checking(self, img):
         """
         Проверка столкновения литуна с объектами.
-        :param rect: область занимаемая литуном
+        :param img: объект летуна.
         :return: результат проверки, если меньше 0, то потеря жизней, если 0, то столкновения нет, если больше 0,
         то получил какую-то плюшку.
         """
-        pass
+        return 0
 
+    def speed_change(self, d):
+        """
+        Изменение скорости летуна.
+        :param d: направление изменения
+        """
+        self._cur_player_off += d * self._inc_player_speed
+        if self._cur_player_off < 0.0:
+            self._cur_player_off = 0.0
+        if self._cur_player_off > self._player_max_speed:
+            self._cur_player_off = self._player_max_speed
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -92,6 +97,13 @@ class CMazeParametrBase:
              CResourse.MAZ_TYPE_NONE),
         )
 
+    def shift_maze(self, shift):
+        """
+        Сместить лабиринт.
+        :param shift: параметр смещения
+        """
+        pass
+
     def next_game_line(self):
         """
         Получает следующую игровую линию.
@@ -106,8 +118,7 @@ class CMazeParametrBase:
             self._test_type = 1 - self._test_type
         return res
 
-
-# ----------------------------------------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------------------------------------
 
 class CMazeCode:
     """
@@ -136,7 +147,7 @@ class CMazeCode:
         self._group_maze_ar = pygame.sprite.Group()
 
     @property
-    def get_group_spr(self):
+    def groups_spr(self):
         return self._group_maze_st, self._group_maze_pl, self._group_maze_ar
 
     def paint(self, sc):
@@ -144,7 +155,7 @@ class CMazeCode:
         Рисование лабиринта.
         :param sc: контекст устройства
         """
-        for elem in self.get_group_spr:
+        for elem in self.groups_spr:
             elem.draw(sc)
 
     def update(self, dx=0):
@@ -152,7 +163,7 @@ class CMazeCode:
         Возвращает кодированную линию - участок лабиринта.
         :param dx: смещение изображений
         """
-        for elem in self.get_group_spr:
+        for elem in self.groups_spr:
             elem.update(dx, 0)
         self._offset += dx
         xs, ys, ws, hs = self._static_param.game_win_rect
@@ -285,6 +296,15 @@ class CMazeCode:
                              self._group_maze_pl, self._group_maze_st)
         return y
 
+    def shift_maze(self, shift):
+        """
+        Сместить рисуемый лабиринт и начать рисование заного.
+        :param shift: параметр смещения.
+        """
+        for gr in self.groups_spr:
+            gr.empty()
+        self._lab.shift_maze(shift)
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -329,3 +349,13 @@ class CMazeParametrFromFile(CMazeParametrBase):
                     t1 = l_c - 2
             t1 = self._rect_win[3] - self._height * (t1 + l_d) + self._rect_win[1]
         return l_d, l_c, k0, k1, t0, t1
+
+    def shift_maze(self, shift):
+        """
+        Сместить лабиринт.
+        :param shift: параметр смещения
+        """
+        self._ind -= shift
+        if self._ind < 0:
+            self._ind = 0
+

@@ -27,7 +27,7 @@ class CGame:
         self._game_bg.start(0.5)
         self._static_param.game_life = 3
         self._player.start()
-        self._game_maze = CGameMaze(CResourse.MAZE_BASE_SPEED, CResourse.MAZE_PERCENT_DIFF_SPEED)
+        self._game_maze = CGameMaze()
 
     def event_handling(self, event):
         """
@@ -44,11 +44,11 @@ class CGame:
                 # Полет вниз.
                 self._player.is_move = 1
             if (event.key == pygame.K_LEFT) or (event.key == pygame.K_a):
-                # TODO: Замедление полета до базового.
-                pass
+                # Замедление полета до базового.
+                self._game_maze.speed_change(-1)
             elif (event.key == pygame.K_RIGHT) or (event.key == pygame.K_d):
-                # TODO: Ускорение до максимально возможного.
-                pass
+                # Ускорение до максимально возможного.
+                self._game_maze.speed_change(1)
         if event.type == pygame.KEYUP:
             if (event.key == pygame.K_UP) or (event.key == pygame.K_w) or \
                     (event.key == pygame.K_DOWN) or (event.key == pygame.K_s):
