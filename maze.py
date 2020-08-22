@@ -20,12 +20,12 @@ class CGameMaze:
         :param percent_diff_offset: процент максимального увеличения скорости от базовой
         """
         self._static_param = CStaticParam()
-        self._base_offset = self._start_offset = base_offset
-        self._inc_offset = 0.25 * base_offset
+        self._base_offset = base_offset
+        self._inc_offset = base_offset * CResourse.MAZE_INCREMENT
         self._max_offset = self._base_offset * (1.0 + percent_diff_offset / 100.0)
         self._cur_v_off = self._base_offset
         self._cur_off = 0.0
-        self._static_param.game_move_to = (0, 0)
+        self._distance = CResourse.MAZE_DISTANCE
         self._maze_param = CMazeParametrFromFile()
         self._maze_code = CMazeCode(CResourse.GROUP_STATIC_SPR, CResourse.GROUP_DYNAMIC_SPR, self._maze_param)
 
@@ -44,6 +44,12 @@ class CGameMaze:
         t = int(self._cur_off)
         self._cur_off -= t
         self._maze_code.update(-t)
+        self._distance -= 1
+        if self._distance < 1:
+            self._base_offset += self._inc_offset
+            self._max_offset += self._inc_offset
+            self._cur_v_off += self._inc_offset
+            self._distance = CResourse.MAZE_DISTANCE
 
     def change_add_offset(self, delta):
         """
@@ -181,10 +187,15 @@ class CMazeCode:
                                       CResourse.SPR_DYN_PLATFORM_UP_1, CResourse.SPR_DYN_PLATFORM_UP_2)
             if (cur_line[4] >= CResourse.MAZ_TYPE_FLY_HEART) or (cur_line[4] <= CResourse.MAZ_TYPE_FLY_PARALYSIS):
                 # Создание артифактов.
-                y = ys + hs + cur_line[5] * self._rect_in_spr_st[0][3]
-                self._create_flayer_artefact(cur_line[4], x, y)
+                self._create_flayer_artefact(cur_line[4], x, cur_line[5])
 
     def _create_flayer_artefact(self, spr_ar, x, y):
+        """
+        Создание летающего артифакта.
+        :param spr_ar: спрайт летающего артифакта
+        :param x: координата x
+        :param y: координата y
+        """
         info_img = self._rect_in_spr_dy[spr_ar - CResourse.MAZ_TYPE_FLY_HEART]
         new_img = pygame.Surface((info_img[2], info_img[3]))
         new_img.blit(self._img_dy_spr, (0, 0), info_img)
@@ -196,6 +207,8 @@ class CMazeCode:
         :param x: координата x
         :param y: нижняя доступная координата y
         :param d: направление стрельбы
+        :param spr: спрайт стрелка
+        :param spr_fire: спрайт выстрела
         :return: новая доступная координата y
         """
         info_img = self._rect_in_spr_st[spr]
@@ -278,6 +291,8 @@ class CMazeCode:
 class CMazeParametrFromFile(CMazeParametrBase):
 
     def __init__(self):
+        self._rect_win = CStaticParam().game_win_rect
+        self._height = CResourse.GROUP_STATIC_SPR[1]
         full_name = os.path.join(CResourse.PATH_BASE_RESOURSE, CResourse.PATH_MAZE_CODE)
         with open(full_name, 'rb') as file_t:
             self._barray = file_t.read()
@@ -312,6 +327,5 @@ class CMazeParametrFromFile(CMazeParametrBase):
                     t1 = 1
                 if t1 > l_c - 2:
                     t1 = l_c - 2
-            t1 += l_d
-            t1 = -t1
+            t1 = self._rect_win[3] - self._height * (t1 + l_d) + self._rect_win[1]
         return l_d, l_c, k0, k1, t0, t1

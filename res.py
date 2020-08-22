@@ -37,6 +37,8 @@ class CResourse:
     # Параметры смещения лабиринта.
     MAZE_BASE_SPEED = 2.0 # 1.0
     MAZE_PERCENT_DIFF_SPEED = 50.0
+    MAZE_DISTANCE = 40
+    MAZE_INCREMENT = 0.05
 
     # Параметры управления платформы.
     MAZE_PLATFORM_DELAY = 4
