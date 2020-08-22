@@ -33,16 +33,6 @@ class CGameFlayerPlayer:
             (2 * w, 0, w, r[3]),
         )
 
-    def start(self):
-        """
-        Инициализация в начале игры.
-        """
-        self._curr_vert = self._cur_pos_fly = 0.0
-        (self._rect[0], self._rect[1]) = self._str_pos
-        self._speed_fly = abs(self._speed_fly)
-        self._curr_pos_type = 1
-        self._is_move = 0
-
     @property
     def rect(self):
         return self._rect
@@ -73,6 +63,23 @@ class CGameFlayerPlayer:
         :param sc: контекст устройства.
         """
         sc.blit(self._image, self.pos, self._spr_win[self._curr_pos_type])
+
+    def start(self):
+        """
+        Инициализация в начале игры.
+        """
+        self._curr_vert = self._cur_pos_fly = 0.0
+        (self._rect[0], self._rect[1]) = self._str_pos
+        self._speed_fly = abs(self._speed_fly)
+        self._curr_pos_type = 1
+        self._is_move = 0
+
+    def pos_to_middle(self):
+        """
+        Выставляет среднюю позицию для игрока.
+        """
+        (_, yw, _, hw) = self._static_param.game_win_rect
+        self._rect[1] = int(yw + hw / 2)
 
     def update(self):
         """

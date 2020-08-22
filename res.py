@@ -33,6 +33,8 @@ class CResourse:
     BIRD_G = 2.0
     BIRD_SPEED_VERT = 10.0
     BIRD_SPEED_FLY = 1.0
+    BIRD_DISTANCE_TRAVELED = "bird_distance_traveled"
+    BIRD_REPEATED_DISTANCE_TRAVELED = "bird_repeated_distance_traveled"
 
     # Параметры смещения лабиринта.
     MAZE_BASE_SPEED = 2.0
@@ -40,7 +42,8 @@ class CResourse:
     MAZE_INCREMENT = MAZE_BASE_SPEED * 0.075
     PLAYER_MAX_SPEED = 10.0
     PLAYER_SPEED_INCREMENT = PLAYER_MAX_SPEED * 0.1
-    MAZE_RECOVERY_DISTANCE = 20
+    MAZE_RECOVERY_DISTANCE = 32
+    MAZE_START_RECOVERY = 6
 
     # Параметры управления платформы.
     MAZE_PLATFORM_DELAY = 4

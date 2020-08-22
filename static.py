@@ -107,6 +107,29 @@ class CStaticParam:
         else:
             self._dict_object.setdefault(CResourse.GAME_INFO_LINE, value)
 
+    # Пройденное и повторно пройденное разстояние игроком.
+    @property
+    def distance_traveled(self):
+        return self._dict_object.get(CResourse.BIRD_DISTANCE_TRAVELED)
+
+    @distance_traveled.setter
+    def distance_traveled(self, value):
+        if CResourse.BIRD_DISTANCE_TRAVELED in self._dict_object:
+            self._dict_object[CResourse.BIRD_DISTANCE_TRAVELED] = value
+        else:
+            self._dict_object.setdefault(CResourse.BIRD_DISTANCE_TRAVELED, value)
+
+    @property
+    def repeated_distance_traveled(self):
+        return self._dict_object.get(CResourse.BIRD_REPEATED_DISTANCE_TRAVELED)
+
+    @repeated_distance_traveled.setter
+    def repeated_distance_traveled(self, value):
+        if CResourse.BIRD_REPEATED_DISTANCE_TRAVELED in self._dict_object:
+            self._dict_object[CResourse.BIRD_REPEATED_DISTANCE_TRAVELED] = value
+        else:
+            self._dict_object.setdefault(CResourse.BIRD_REPEATED_DISTANCE_TRAVELED, value)
+
     @staticmethod
     def load_image(file_name, colorkey=None):
         """

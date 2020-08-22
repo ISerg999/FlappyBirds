@@ -17,6 +17,8 @@ class CGameMaze:
         self._base_offset = self._max_offset = self._cur_v_off = self._cur_off = self._distance = None
         self._cur_player_off = None
         self._static_param = CStaticParam()
+        self._static_param.distance_traveled = 0
+        self._static_param.repeated_distance_traveled = CResourse.MAZE_START_RECOVERY
         self._start_offset = CResourse.MAZE_BASE_SPEED
         self._inc_offset = CResourse.MAZE_INCREMENT
         self._player_max_speed = CResourse.PLAYER_MAX_SPEED
@@ -34,6 +36,8 @@ class CGameMaze:
         self._cur_off = 0.0
         self._cur_player_off = 0.0
         self._distance = CResourse.MAZE_DISTANCE
+        self._static_param.repeated_distance_traveled = self._static_param.repeated_distance_traveled + \
+                                                        CResourse.MAZE_RECOVERY_DISTANCE
         self._maze_code.shift_maze(CResourse.MAZE_RECOVERY_DISTANCE)
 
     def paint(self, sc):
@@ -95,6 +99,7 @@ class CMazeParametrBase:
     """
 
     def __init__(self):
+        self._static_param = CStaticParam()
         self._test_max = 4
         self._test_cur = self._test_max
         self._test_type = 0
@@ -114,6 +119,15 @@ class CMazeParametrBase:
         """
         pass
 
+    def calc_distance_traveled(self):
+        """
+        Подсёт пройденного разстояния.
+        """
+        if self._static_param.repeated_distance_traveled > 0:
+            self._static_param.repeated_distance_traveled = self._static_param.repeated_distance_traveled - 1
+        else:
+            self._static_param.distance_traveled = self._static_param.distance_traveled + 1
+
     def next_game_line(self):
         """
         Получает следующую игровую линию.
@@ -126,6 +140,7 @@ class CMazeParametrBase:
             self._test_cur = self._test_max
             res = self._r1[self._test_type]
             self._test_type = 1 - self._test_type
+        self.calc_distance_traveled()
         return res
 
     # ----------------------------------------------------------------------------------------------------------------------
@@ -322,6 +337,7 @@ class CMazeCode:
 class CMazeParametrFromFile(CMazeParametrBase):
 
     def __init__(self):
+        self._static_param = CStaticParam()
         self._rect_win = CStaticParam().game_win_rect
         self._height = CResourse.GROUP_STATIC_SPR[1]
         full_name = os.path.join(CResourse.PATH_BASE_RESOURSE, CResourse.PATH_MAZE_CODE)
@@ -351,14 +367,15 @@ class CMazeParametrFromFile(CMazeParametrBase):
         t0 = t0 - t1 * 16
         if t0 >= CResourse.MAZ_TYPE_FLY_HEART:
             if t1 == 0:
-                t1 = random.randint(0, l_c - 2) + 1
+                t1 = int(l_c / 2) + random.randint(0, 8) - 4
             else:
                 t1 = t1 + int(l_c / 2) - 8
-                if t1 < 1:
-                    t1 = 1
-                if t1 > l_c - 2:
-                    t1 = l_c - 2
+            if t1 < 1:
+                t1 = 1
+            if t1 > l_c - 2:
+                t1 = l_c - 2
             t1 = self._rect_win[3] - self._height * (t1 + l_d) + self._rect_win[1]
+        self.calc_distance_traveled()
         return l_d, l_c, k0, k1, t0, t1
 
     def shift_maze(self, shift):
@@ -366,6 +383,6 @@ class CMazeParametrFromFile(CMazeParametrBase):
         Сместить лабиринт.
         :param shift: параметр смещения
         """
-        self._ind -= shift
+        self._ind -= shift * 4
         if self._ind < 0:
             self._ind = 0

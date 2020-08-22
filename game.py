@@ -89,6 +89,7 @@ class CGame:
             if self._static_param.game_life < 1:
                 raise CGamesExceptionGameOver()
             self._static_param.game_life = self._static_param.game_life - 1
+            self._player.pos_to_middle()
             self._state_player = 0
             self._game_maze.shift_game()
 
@@ -119,6 +120,7 @@ class CGameInfoLine:
         self._img_life, self._rect_life = CStaticParam.load_image(CResourse.PATH_IMG_HEART)
         self._life_dy = int((self._static_param.game_info_line_size - self._rect_life[3]) / 2)
         self._rect_life[1] = self._life_dy
+        self._ft = pygame.font.SysFont(None, 32, bold=True)
 
     def paint(self, sc):
         """
@@ -132,6 +134,11 @@ class CGameInfoLine:
             # Рисование сердечек.
             sc.blit(self._img_life, self._rect_life)
             self._rect_life[0] -= self._rect_life[2] + 2
+        text = str(self._static_param.distance_traveled)
+        _, text_height = self._ft.size(text)
+        sc_text = self._ft.render(text, 1, CResourse.COLOR_WHITE)
+        y = int((self._static_param.game_info_line_size - text_height) / 2)
+        sc.blit(sc_text, (2, y))
 
 
 # ----------------------------------------------------------------------------------------------------------------------
