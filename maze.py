@@ -23,9 +23,9 @@ class CGameMaze:
         self._inc_player_speed = CResourse.PLAYER_SPEED_INCREMENT
         self._maze_param = CMazeParametrFromFile()
         self._maze_code = CMazeCode(CResourse.GROUP_STATIC_SPR, CResourse.GROUP_DYNAMIC_SPR, self._maze_param)
-        self.recovery_distance()
+        self.shift_game()
 
-    def recovery_distance(self):
+    def shift_game(self):
         """
         Восстановление дистанции. Вызвается либо в начале, либо в момент смерти.
         """
@@ -57,13 +57,22 @@ class CGameMaze:
             self._cur_v_off += self._inc_offset
             self._distance = CResourse.MAZE_DISTANCE
 
-    def collision_checking(self, img):
+    def is_collision(self, player):
         """
         Проверка столкновения литуна с объектами.
-        :param img: объект летуна.
+        :param player: объект летуна.
         :return: результат проверки, если меньше 0, то потеря жизней, если 0, то столкновения нет, если больше 0,
         то получил какую-то плюшку.
         """
+        grs = self._maze_code.groups_spr
+
+        if pygame.sprite.spritecollideany(player, grs[0]) or pygame.sprite.spritecollideany(player, grs[1]):
+            return -1
+        tmp = pygame.sprite.spritecollideany(player, grs[2])
+        if tmp:
+            r = tmp.type_ar
+            tmp.kill()
+            return r
         return 0
 
     def speed_change(self, d):
@@ -76,6 +85,7 @@ class CGameMaze:
             self._cur_player_off = 0.0
         if self._cur_player_off > self._player_max_speed:
             self._cur_player_off = self._player_max_speed
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -119,6 +129,7 @@ class CMazeParametrBase:
         return res
 
     # ----------------------------------------------------------------------------------------------------------------------
+
 
 class CMazeCode:
     """
@@ -358,4 +369,3 @@ class CMazeParametrFromFile(CMazeParametrBase):
         self._ind -= shift
         if self._ind < 0:
             self._ind = 0
-

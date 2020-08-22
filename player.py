@@ -18,10 +18,11 @@ class CGameFlayerPlayer:
         :param speed_vert: смещение при перемещении вверх или вниз
         :param speed_fly: скрость махания крыльями
         """
+        self._static_param = CStaticParam()
         self._image, r = CStaticParam.load_image(CResourse.PATH_IMG_BIRD)
         w = int(r[2] / 3)
         self._str_pos = (x, y)
-        self._rect = [x, y, w, r[3]]
+        self._rect = pygame.Rect(x, y, w, r[3])
         self._is_move = self._y = self._curr_pos_type = 0
         self._curr_vert = self._cur_pos_fly = 0.0
         self._speed_vert, self._g = speed_vert, g
@@ -90,3 +91,8 @@ class CGameFlayerPlayer:
             self._curr_pos_type = 0
         else:
             self._curr_pos_type = 1
+        (_, yw, _, hw) = self._static_param.game_win_rect
+        if self._rect[1] < yw:
+            self._rect[1] = yw
+        elif self._rect[1] > yw + hw - self._rect[3]:
+            self._rect[1] = yw + hw - self._rect[3]

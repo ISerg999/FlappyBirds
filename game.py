@@ -1,5 +1,6 @@
 import pygame
 
+from gameexception import CGamesExceptionGameOver
 from maze import CGameMaze
 from player import CGameFlayerPlayer
 from res import CResourse
@@ -17,8 +18,12 @@ class CGame:
         self._game_bg = CGameBG()
         self._player = CGameFlayerPlayer(80, int((self._static_param.full_size[1] - 24) / 2),
                                          CResourse.BIRD_G, CResourse.BIRD_SPEED_VERT, CResourse.BIRD_SPEED_FLY)
-        self._game_maze = None
+        self._game_maze = self._state_player = None
         self.start()
+
+    @property
+    def state_player(self):
+        return self._state_player
 
     def start(self):
         """
@@ -28,6 +33,7 @@ class CGame:
         self._static_param.game_life = 3
         self._player.start()
         self._game_maze = CGameMaze()
+        self._state_player = 0
 
     def event_handling(self, event):
         """
@@ -36,6 +42,8 @@ class CGame:
         """
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
+                return -2
+            if self._state_player < 0:
                 return -1
             if (event.key == pygame.K_UP) or (event.key == pygame.K_w):
                 # Полет вверх.
@@ -71,8 +79,30 @@ class CGame:
         self._game_bg.next_state()
         self._game_maze.update()
         self._player.update()
-        # TODO: Проверка на вылет за пределы игрового экрана
-        # TODO: Проверка столкновения.
+        # Проверка на вылет за пределы игрового экрана
+        if self._player_is_not_window():
+            self._state_player = -1
+        # Проверка столкновения.
+        if self._state_player >= 0:
+            self._state_player = self._game_maze.is_collision(self._player)
+        if self._state_player < 0:
+            if self._static_param.game_life < 1:
+                raise CGamesExceptionGameOver()
+            self._static_param.game_life = self._static_param.game_life - 1
+            self._state_player = 0
+            self._game_maze.shift_game()
+
+    def _player_is_not_window(self):
+        """
+        Проверка игрока на вылет за пределы экрана.
+        :return: True - игрок вылетел за пределы экрана, False - игрок не вылетел за пределы экрана.
+        """
+        res = False
+        y = self._player.pos[1]
+        (xw, yw, ww, hw) = self._static_param.game_win_rect
+        if (y <= yw + 5) or (y >= yw + hw - self._player.size[1] - 5):
+            res = True
+        return res
 
 
 # ----------------------------------------------------------------------------------------------------------------------

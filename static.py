@@ -30,7 +30,10 @@ class CStaticParam:
 
     @full_size.setter
     def full_size(self, value):
-        self._dict_object.setdefault(CResourse.WINDOW_FULL_SIZE, value)
+        if CResourse.WINDOW_FULL_SIZE in self._dict_object:
+            self._dict_object[CResourse.WINDOW_FULL_SIZE] = value
+        else:
+            self._dict_object.setdefault(CResourse.WINDOW_FULL_SIZE, value)
 
     # Параметры размера игрового окна.
     @property
@@ -39,7 +42,10 @@ class CStaticParam:
 
     @game_win_rect.setter
     def game_win_rect(self, value):
-        self._dict_object.setdefault(CResourse.GAME_WINDOW_RECT, value)
+        if CResourse.GAME_WINDOW_RECT in self._dict_object:
+            self._dict_object[CResourse.GAME_WINDOW_RECT] = value
+        else:
+            self._dict_object.setdefault(CResourse.GAME_WINDOW_RECT, value)
 
     # Размер игрового окна в спрайтовых размеров (по умолчанию 40x20)
     @property
@@ -48,7 +54,10 @@ class CStaticParam:
 
     @game_win_spr_size.setter
     def game_win_spr_size(self, value):
-        self._dict_object.setdefault(CResourse.GAME_WIN_SPR_SIZE, value)
+        if CResourse.GAME_WIN_SPR_SIZE in self._dict_object:
+            self._dict_object[CResourse.GAME_WIN_SPR_SIZE] = value
+        else:
+            self._dict_object.setdefault(CResourse.GAME_WIN_SPR_SIZE, value)
 
     # Высота игровой информационной полосы.
     @property
@@ -57,7 +66,10 @@ class CStaticParam:
 
     @game_info_line_size.setter
     def game_info_line_size(self, value):
-        self._dict_object.setdefault(CResourse.GAME_INFO_LINE_SIZE, value)
+        if CResourse.GAME_INFO_LINE_SIZE in self._dict_object:
+            self._dict_object[CResourse.GAME_INFO_LINE_SIZE] = value
+        else:
+            self._dict_object.setdefault(CResourse.GAME_INFO_LINE_SIZE, value)
 
     # Объект управляющий игрой.
     @property
@@ -66,7 +78,10 @@ class CStaticParam:
 
     @game_process.setter
     def game_process(self, value):
-        self._dict_object.setdefault(CResourse.GAME_PROCESS, value)
+        if CResourse.GAME_PROCESS in self._dict_object:
+            self._dict_object[CResourse.GAME_PROCESS] = value
+        else:
+            self._dict_object.setdefault(CResourse.GAME_PROCESS, value)
 
     # Количестов жизней игрока.
     @property
@@ -75,7 +90,10 @@ class CStaticParam:
 
     @game_life.setter
     def game_life(self, value):
-        self._dict_object.setdefault(CResourse.GAME_LIFE, value)
+        if CResourse.GAME_LIFE in self._dict_object:
+            self._dict_object[CResourse.GAME_LIFE] = value
+        else:
+            self._dict_object.setdefault(CResourse.GAME_LIFE, value)
 
     # Объект информационной линии
     @property
@@ -84,7 +102,10 @@ class CStaticParam:
 
     @game_info_line.setter
     def game_info_line(self, value):
-        self._dict_object.setdefault(CResourse.GAME_INFO_LINE, value)
+        if CResourse.GAME_INFO_LINE in self._dict_object:
+            self._dict_object[CResourse.GAME_INFO_LINE] = value
+        else:
+            self._dict_object.setdefault(CResourse.GAME_INFO_LINE, value)
 
     @staticmethod
     def load_image(file_name, colorkey=None):

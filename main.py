@@ -1,6 +1,7 @@
 import pygame
 
 from game import CGame, CGameInfoLine
+from gameexception import CGamesExceptionGameOver
 from menu import CMainMenu, CExitToMenu
 from res import CResourse
 from static import CStaticParam
@@ -44,7 +45,10 @@ class CMain:
             # Рисование.
             self._paint()
             # Подготовка новых данных.
-            self._update()
+            try:
+                self._update()
+            except CGamesExceptionGameOver:
+                self._is_game = self._is_exit_to_menu = False
             pygame.time.delay(20)
 
     def _analize_event(self, event):
@@ -68,7 +72,7 @@ class CMain:
             else:
                 # Запуск анализа игровых событий
                 res = self._static_param.game_process.event_handling(event)
-                if res < 0:
+                if res == -2:
                     # Запуск объекта дополнительного меню.
                     self._is_exit_to_menu = True
         else:

@@ -5,15 +5,9 @@ class CGamesException(Exception):
     pass
 
 
-class CGamesExceptionExitGame(CGamesException):
+class CGamesExceptionGameOver(CGamesException):
     """
-    Изключение возникающее при выходе из игры.
+    Изключение возникающее при окончании игры.
     """
     pass
 
-
-class CGamesExceptionStopMaze(CGamesException):
-    """
-    Изключение возникающее если выводимый лабиринт закончился.
-    """
-    pass
