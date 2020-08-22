@@ -13,12 +13,13 @@ class CGame:
     """
 
     def __init__(self):
+        self._game_maze = self._state_player = None
         self._static_param = CStaticParam()
         # Ссылка на объект рисующий фон игры.
         self._game_bg = CGameBG()
         self._player = CGameFlayerPlayer(80, int((self._static_param.full_size[1] - 24) / 2),
                                          CResourse.BIRD_G, CResourse.BIRD_SPEED_VERT, CResourse.BIRD_SPEED_FLY)
-        self._game_maze = self._state_player = None
+        self._static_param.bird_paralys = 0
         self.start()
 
     @property
@@ -45,18 +46,21 @@ class CGame:
                 return -2
             if self._state_player < 0:
                 return -1
-            if (event.key == pygame.K_UP) or (event.key == pygame.K_w):
-                # Полет вверх.
-                self._player.is_move = -1
-            elif (event.key == pygame.K_DOWN) or (event.key == pygame.K_s):
-                # Полет вниз.
-                self._player.is_move = 1
-            if (event.key == pygame.K_LEFT) or (event.key == pygame.K_a):
-                # Замедление полета до базового.
-                self._game_maze.speed_change(-1)
-            elif (event.key == pygame.K_RIGHT) or (event.key == pygame.K_d):
-                # Ускорение до максимально возможного.
-                self._game_maze.speed_change(1)
+            if self._static_param.bird_paralys < 1:
+                if (event.key == pygame.K_UP) or (event.key == pygame.K_w):
+                    # Полет вверх.
+                    self._player.is_move = -1
+                elif (event.key == pygame.K_DOWN) or (event.key == pygame.K_s):
+                    # Полет вниз.
+                    self._player.is_move = 1
+                if (event.key == pygame.K_LEFT) or (event.key == pygame.K_a):
+                    # Замедление полета до базового.
+                    self._game_maze.speed_player_change(-1)
+                elif (event.key == pygame.K_RIGHT) or (event.key == pygame.K_d):
+                    # Ускорение до максимально возможного.
+                    self._game_maze.speed_player_change(1)
+            else:
+                self._static_param.bird_paralys = self._static_param.bird_paralys - 1
         if event.type == pygame.KEYUP:
             if (event.key == pygame.K_UP) or (event.key == pygame.K_w) or \
                     (event.key == pygame.K_DOWN) or (event.key == pygame.K_s):
@@ -92,6 +96,16 @@ class CGame:
             self._player.pos_to_middle()
             self._state_player = 0
             self._game_maze.shift_game()
+        if self._state_player > 0:
+            if (self._state_player == CResourse.MAZ_TYPE_FLY_HEART) and (self._static_param.game_life < 6):
+                self._static_param.game_life = self._static_param.game_life + 1
+            elif self._state_player == CResourse.MAZ_TYPE_FLY_BRAKING:
+                self._game_maze.speed_maze_change(-4)
+            elif self._state_player == CResourse.MAZ_TYPE_FLY_ACCELERATION:
+                self._game_maze.speed_maze_change(4)
+            elif self._state_player == CResourse.MAZ_TYPE_FLY_PARALYSIS:
+                # TODO:
+                self._static_param.bird_paralys = CResourse.BIRD_TIME_PARALYS
 
     def _player_is_not_window(self):
         """
@@ -120,7 +134,7 @@ class CGameInfoLine:
         self._img_life, self._rect_life = CStaticParam.load_image(CResourse.PATH_IMG_HEART)
         self._life_dy = int((self._static_param.game_info_line_size - self._rect_life[3]) / 2)
         self._rect_life[1] = self._life_dy
-        self._ft = pygame.font.SysFont(None, 32, bold=True)
+        self._ft = pygame.font.SysFont(None, 28, bold=True)
 
     def paint(self, sc):
         """
@@ -134,7 +148,8 @@ class CGameInfoLine:
             # Рисование сердечек.
             sc.blit(self._img_life, self._rect_life)
             self._rect_life[0] -= self._rect_life[2] + 2
-        text = str(self._static_param.distance_traveled)
+        t = int(self._static_param.maze_full_speed * 10000) / 10000.0
+        text = "l: " + str(self._static_param.distance_traveled) + "  v: " + str(t)
         _, text_height = self._ft.size(text)
         sc_text = self._ft.render(text, 1, CResourse.COLOR_WHITE)
         y = int((self._static_param.game_info_line_size - text_height) / 2)

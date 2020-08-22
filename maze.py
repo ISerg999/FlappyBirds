@@ -14,13 +14,13 @@ class CGameMaze:
     """
 
     def __init__(self):
-        self._base_offset = self._max_offset = self._cur_v_off = self._cur_off = self._distance = None
-        self._cur_player_off = None
+        self._maze_offset = self._player_offset = self._distance = self._cur_offset = None
         self._static_param = CStaticParam()
+        self._static_param.maze_full_speed = 0.0
         self._static_param.distance_traveled = 0
         self._static_param.repeated_distance_traveled = CResourse.MAZE_START_RECOVERY
-        self._start_offset = CResourse.MAZE_BASE_SPEED
-        self._inc_offset = CResourse.MAZE_INCREMENT
+        self._maze_base_offset = CResourse.MAZE_BASE_SPEED
+        self._inc_maze_offset = CResourse.MAZE_INCREMENT
         self._player_max_speed = CResourse.PLAYER_MAX_SPEED
         self._inc_player_speed = CResourse.PLAYER_SPEED_INCREMENT
         self._maze_param = CMazeParametrFromFile()
@@ -31,10 +31,9 @@ class CGameMaze:
         """
         Восстановление дистанции. Вызвается либо в начале, либо в момент смерти.
         """
-        self._base_offset = self._start_offset
-        self._cur_v_off = self._base_offset
-        self._cur_off = 0.0
-        self._cur_player_off = 0.0
+        self._maze_offset = self._maze_base_offset
+        self._player_offset = 0.0
+        self._cur_offset = 0.0
         self._distance = CResourse.MAZE_DISTANCE
         self._static_param.repeated_distance_traveled = self._static_param.repeated_distance_traveled + \
                                                         CResourse.MAZE_RECOVERY_DISTANCE
@@ -51,14 +50,14 @@ class CGameMaze:
         """
         Смещение всего игрового поля.
         """
-        self._cur_off += self._cur_v_off + self._cur_player_off
-        t = int(self._cur_off)
-        self._cur_off -= t
+        self._static_param.maze_full_speed = self._maze_offset + self._player_offset
+        self._cur_offset += self._maze_offset + self._player_offset
+        t = int(self._cur_offset)
+        self._cur_offset -= t
         self._maze_code.update(-t)
         self._distance -= 1
         if self._distance < 1:
-            self._base_offset += self._inc_offset
-            self._cur_v_off += self._inc_offset
+            self._maze_offset += self._inc_maze_offset
             self._distance = CResourse.MAZE_DISTANCE
 
     def is_collision(self, player):
@@ -79,16 +78,27 @@ class CGameMaze:
             return r
         return 0
 
-    def speed_change(self, d):
+    def speed_player_change(self, d):
         """
         Изменение скорости летуна.
         :param d: направление изменения
         """
-        self._cur_player_off += d * self._inc_player_speed
-        if self._cur_player_off < 0.0:
-            self._cur_player_off = 0.0
-        if self._cur_player_off > self._player_max_speed:
-            self._cur_player_off = self._player_max_speed
+        t = self._player_offset + d * self._inc_player_speed
+        if t < 0.0:
+            t = 0.0
+        elif t > self._player_max_speed:
+            t = self._player_max_speed
+        self._player_offset = t
+
+    def speed_maze_change(self, d):
+        """
+        Изменение скорости лабиринта за счёт пойманных артифактов.
+        :param d: изменение скорости лабиринта в условных еденицах
+        """
+        t = self._maze_offset + d * self._inc_maze_offset
+        if t < self._maze_base_offset:
+            t = self._maze_base_offset
+        self._maze_offset = t
 
 
 # ----------------------------------------------------------------------------------------------------------------------

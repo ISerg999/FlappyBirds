@@ -130,6 +130,30 @@ class CStaticParam:
         else:
             self._dict_object.setdefault(CResourse.BIRD_REPEATED_DISTANCE_TRAVELED, value)
 
+    # Счётчик периода парализации игрока.
+    @property
+    def bird_paralys(self):
+        return self._dict_object.get(CResourse.BIRD_PARALYS)
+
+    @bird_paralys.setter
+    def bird_paralys(self, value):
+        if CResourse.BIRD_PARALYS in self._dict_object:
+            self._dict_object[CResourse.BIRD_PARALYS] = value
+        else:
+            self._dict_object.setdefault(CResourse.BIRD_PARALYS, value)
+
+    # Полная текущая скорость.
+    @property
+    def maze_full_speed(self):
+        return self._dict_object.get(CResourse.MAZE_FULL_SPEED)
+
+    @maze_full_speed.setter
+    def maze_full_speed(self, value):
+        if CResourse.MAZE_FULL_SPEED in self._dict_object:
+            self._dict_object[CResourse.MAZE_FULL_SPEED] = value
+        else:
+            self._dict_object.setdefault(CResourse.MAZE_FULL_SPEED, value)
+
     @staticmethod
     def load_image(file_name, colorkey=None):
         """
